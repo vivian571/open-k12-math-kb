@@ -1,9 +1,9 @@
 {
-  "title": "初中数学全量知识图谱 (七年级上册及中考代数几何基石)",
+  "title": "初中数学全量知识图谱 (七年级上册 + 七年级下册全贯通)",
   "standard": "教育部义务教育数学课程标准",
   "textbook_reference": "义务教育教科书·数学（七年级上册）",
-  "total_chapters": 7,
-  "total_points": 42,
+  "total_chapters": 11,
+  "total_points": 63,
   "chapters": [
     {
       "chapter_id": 1,
@@ -343,6 +343,189 @@
           "name": "余角和补角的概念与‘同角或等角的余角/补角相等’定理",
           "prerequisites": [
             "m_c07_p04"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 8,
+      "chapter_name": "第8章 相交线与平行线",
+      "page_range": "七下 P35-P72",
+      "points": [
+        {
+          "id": "m_c08_p01",
+          "name": "邻补角与对顶角的性质（对顶角相等）",
+          "prerequisites": []
+        },
+        {
+          "id": "m_c08_p02",
+          "name": "垂线与垂线段最短（点到直线的距离）",
+          "prerequisites": [
+            "m_c08_p01"
+          ]
+        },
+        {
+          "id": "m_c08_p03",
+          "name": "同位角、内错角与同旁内角（三线八角 F/Z/U 拓扑结构）",
+          "prerequisites": [
+            "m_c08_p01"
+          ]
+        },
+        {
+          "id": "m_c08_p04",
+          "name": "平行线的判定定理（角相等/互补推平行）",
+          "prerequisites": [
+            "m_c08_p03"
+          ]
+        },
+        {
+          "id": "m_c08_p05",
+          "name": "平行线的性质定理（两直线平行推角相等/互补）",
+          "prerequisites": [
+            "m_c08_p04"
+          ]
+        },
+        {
+          "id": "m_c08_p06",
+          "name": "平行线折叠与拐点模型（折叠角全等守恒、拐点作辅助平行线）",
+          "prerequisites": [
+            "m_c08_p05"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 10,
+      "chapter_name": "第10章 整式的乘法与除法",
+      "page_range": "七下 P83-P120",
+      "points": [
+        {
+          "id": "m_c10_p01",
+          "name": "同底数幂的乘法与除法法则 (a^m·a^n=a^(m+n), a^m÷a^n=a^(m-n))",
+          "prerequisites": [
+            "m_c02_p05"
+          ]
+        },
+        {
+          "id": "m_c10_p02",
+          "name": "幂的乘方与积的乘方 ((a^m)^n=a^(mn), (ab)^n=a^n·b^n)",
+          "prerequisites": [
+            "m_c10_p01"
+          ]
+        },
+        {
+          "id": "m_c10_p03",
+          "name": "单项式乘单项式与单项式乘多项式",
+          "prerequisites": [
+            "m_c10_p02"
+          ]
+        },
+        {
+          "id": "m_c10_p04",
+          "name": "单项式除以单项式运算法则（系数、同底数幂分别相除）",
+          "prerequisites": [
+            "m_c10_p01",
+            "m_c10_p03"
+          ]
+        },
+        {
+          "id": "m_c10_p05",
+          "name": "多项式除以单项式运算法则",
+          "prerequisites": [
+            "m_c10_p04"
+          ]
+        },
+        {
+          "id": "m_c10_p06",
+          "name": "平方差公式及其几何面积拼图证明 ((a+b)(a-b)=a^2-b^2)",
+          "prerequisites": [
+            "m_c10_p03"
+          ]
+        },
+        {
+          "id": "m_c10_p07",
+          "name": "完全平方公式首平方尾平方积的2倍在中央 ((a±b)^2=a^2±2ab+b^2)",
+          "prerequisites": [
+            "m_c10_p06"
+          ]
+        },
+        {
+          "id": "m_c10_p08",
+          "name": "完全平方公式数形结合、代数变形与简便计算 (101^2, a^2+b^2)",
+          "prerequisites": [
+            "m_c10_p07"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 11,
+      "chapter_name": "第11章 因式分解",
+      "page_range": "七下 P121-P136",
+      "points": [
+        {
+          "id": "m_c11_p01",
+          "name": "因式分解概念及其与整式乘法的互逆关系",
+          "prerequisites": [
+            "m_c10_p03"
+          ]
+        },
+        {
+          "id": "m_c11_p02",
+          "name": "提公因式法（公因式系数最大公约数与字母最低次幂）",
+          "prerequisites": [
+            "m_c11_p01"
+          ]
+        },
+        {
+          "id": "m_c11_p03",
+          "name": "公式法分解因式：逆用平方差公式 (a^2-b^2=(a+b)(a-b))",
+          "prerequisites": [
+            "m_c10_p06",
+            "m_c11_p01"
+          ]
+        },
+        {
+          "id": "m_c11_p04",
+          "name": "公式法分解因式：逆用完全平方公式 (a^2±2ab+b^2=(a±b)^2)",
+          "prerequisites": [
+            "m_c10_p07",
+            "m_c11_p01"
+          ]
+        },
+        {
+          "id": "m_c11_p05",
+          "name": "因式分解综合应用与易错检查（一提二套三查彻底）",
+          "prerequisites": [
+            "m_c11_p02",
+            "m_c11_p03",
+            "m_c11_p04"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 7,
+      "chapter_name": "第7章 数据的收集、整理与描述",
+      "page_range": "七下 P1-P34",
+      "points": [
+        {
+          "id": "m_c07_p01",
+          "name": "全面调查（普查）与抽样调查的界定与样本代表性",
+          "prerequisites": []
+        },
+        {
+          "id": "m_c07_p02",
+          "name": "总体、个体、样本与样本容量的概念规范",
+          "prerequisites": [
+            "m_c07_p01"
+          ]
+        },
+        {
+          "id": "m_c07_p03",
+          "name": "频数、频率与频数分布直方图绘制与扇形统计图",
+          "prerequisites": [
+            "m_c07_p02"
           ]
         }
       ]
