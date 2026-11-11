@@ -1,0 +1,351 @@
+{
+  "title": "初中数学全量知识图谱 (七年级上册及中考代数几何基石)",
+  "standard": "教育部义务教育数学课程标准",
+  "textbook_reference": "义务教育教科书·数学（七年级上册）",
+  "total_chapters": 7,
+  "total_points": 42,
+  "chapters": [
+    {
+      "chapter_id": 1,
+      "chapter_name": "第1章 有理数的基本概念",
+      "page_range": "1-26",
+      "points": [
+        {
+          "id": "m_c01_p01",
+          "name": "正数、负数与相反意义的量",
+          "prerequisites": []
+        },
+        {
+          "id": "m_c01_p02",
+          "name": "有理数的分类（按定义与按正负）",
+          "prerequisites": [
+            "m_c01_p01"
+          ]
+        },
+        {
+          "id": "m_c01_p03",
+          "name": "数轴的三要素（原点、正方向、单位长度）与点数对应",
+          "prerequisites": [
+            "m_c01_p02"
+          ]
+        },
+        {
+          "id": "m_c01_p04",
+          "name": "相反数的几何意义与代数定义 (a + b = 0)",
+          "prerequisites": [
+            "m_c01_p03"
+          ]
+        },
+        {
+          "id": "m_c01_p05",
+          "name": "绝对值的代数定义与距离几何意义 (|a| ≥ 0)",
+          "prerequisites": [
+            "m_c01_p03",
+            "m_c01_p04"
+          ]
+        },
+        {
+          "id": "m_c01_p06",
+          "name": "有理数的大小比较（法则与数轴法）",
+          "prerequisites": [
+            "m_c01_p03",
+            "m_c01_p05"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 2,
+      "chapter_name": "第2章 有理数的运算体系",
+      "page_range": "27-58",
+      "points": [
+        {
+          "id": "m_c02_p01",
+          "name": "有理数的加法法则与运算律（同号、异号、互为相反数）",
+          "prerequisites": [
+            "m_c01_p05"
+          ]
+        },
+        {
+          "id": "m_c02_p02",
+          "name": "有理数的减法法则（减去一个数等于加上它的相反数）",
+          "prerequisites": [
+            "m_c02_p01"
+          ]
+        },
+        {
+          "id": "m_c02_p03",
+          "name": "有理数的乘法法则与符号判定（两数/多数字符号规律）",
+          "prerequisites": [
+            "m_c02_p01"
+          ]
+        },
+        {
+          "id": "m_c02_p04",
+          "name": "有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)",
+          "prerequisites": [
+            "m_c02_p03"
+          ]
+        },
+        {
+          "id": "m_c02_p05",
+          "name": "有理数的乘方运算与符号判定 ((-a)^n vs -a^n)",
+          "prerequisites": [
+            "m_c02_p03"
+          ]
+        },
+        {
+          "id": "m_c02_p06",
+          "name": "有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）",
+          "prerequisites": [
+            "m_c02_p01",
+            "m_c02_p02",
+            "m_c02_p03",
+            "m_c02_p04",
+            "m_c02_p05"
+          ]
+        },
+        {
+          "id": "m_c02_p07",
+          "name": "科学记数法表示大数与有效数字规则",
+          "prerequisites": [
+            "m_c02_p05"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 3,
+      "chapter_name": "第3章 代数式与整式初步",
+      "page_range": "59-78",
+      "points": [
+        {
+          "id": "m_c03_p01",
+          "name": "用字母表示数与代数式的书写规范",
+          "prerequisites": [
+            "m_c02_p06"
+          ]
+        },
+        {
+          "id": "m_c03_p02",
+          "name": "代数式的值与代入求值技巧（整体代入法）",
+          "prerequisites": [
+            "m_c03_p01"
+          ]
+        },
+        {
+          "id": "m_c03_p03",
+          "name": "单项式的概念、系数与次数",
+          "prerequisites": [
+            "m_c03_p01"
+          ]
+        },
+        {
+          "id": "m_c03_p04",
+          "name": "多项式的概念、项、常数项与最高次数",
+          "prerequisites": [
+            "m_c03_p03"
+          ]
+        },
+        {
+          "id": "m_c03_p05",
+          "name": "整式的分类与判断标准",
+          "prerequisites": [
+            "m_c03_p03",
+            "m_c03_p04"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 4,
+      "chapter_name": "第4章 整式的加法与减法",
+      "page_range": "79-98",
+      "points": [
+        {
+          "id": "m_c04_p01",
+          "name": "同类项的概念与判定两要素（字母相同、相同字母指数相同）",
+          "prerequisites": [
+            "m_c03_p05"
+          ]
+        },
+        {
+          "id": "m_c04_p02",
+          "name": "合并同类项法则（系数相加，字母与指数不变）",
+          "prerequisites": [
+            "m_c04_p01"
+          ]
+        },
+        {
+          "id": "m_c04_p03",
+          "name": "去括号法则（括号前是正号不变，括号前是负号全变）",
+          "prerequisites": [
+            "m_c04_p02"
+          ]
+        },
+        {
+          "id": "m_c04_p04",
+          "name": "添括号法则与恒等变形技巧",
+          "prerequisites": [
+            "m_c04_p03"
+          ]
+        },
+        {
+          "id": "m_c04_p05",
+          "name": "整式的加减混合运算与化简求值策略",
+          "prerequisites": [
+            "m_c04_p02",
+            "m_c04_p03"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 5,
+      "chapter_name": "第5章 一元一次方程的解法",
+      "page_range": "99-115",
+      "points": [
+        {
+          "id": "m_c05_p01",
+          "name": "方程、方程的解与一元一次方程的定义",
+          "prerequisites": [
+            "m_c03_p01"
+          ]
+        },
+        {
+          "id": "m_c05_p02",
+          "name": "等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）",
+          "prerequisites": [
+            "m_c05_p01"
+          ]
+        },
+        {
+          "id": "m_c05_p03",
+          "name": "移项法则与变号原理（本质是等式性质1的应用）",
+          "prerequisites": [
+            "m_c05_p02"
+          ]
+        },
+        {
+          "id": "m_c05_p04",
+          "name": "解一元一次方程五部曲：去分母（防漏乘）",
+          "prerequisites": [
+            "m_c05_p02",
+            "m_c05_p03"
+          ]
+        },
+        {
+          "id": "m_c05_p05",
+          "name": "解一元一次方程五部曲：去括号、合并同类项与系数化为1",
+          "prerequisites": [
+            "m_c04_p03",
+            "m_c05_p04"
+          ]
+        },
+        {
+          "id": "m_c05_p06",
+          "name": "含有绝对值或未知数在分母形式方程的简易转化",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 6,
+      "chapter_name": "第6章 一元一次方程与实际问题应用模型",
+      "page_range": "116-135",
+      "points": [
+        {
+          "id": "m_c06_p01",
+          "name": "积分与竞赛问题模型（答对得分、答错扣分守恒）",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        },
+        {
+          "id": "m_c06_p02",
+          "name": "调配与调运问题模型（甲乙仓调拨总量守恒法）",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        },
+        {
+          "id": "m_c06_p03",
+          "name": "工程与抽水协作模型（工作量 = 工作效率 × 时间，总量设为1）",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        },
+        {
+          "id": "m_c06_p04",
+          "name": "行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        },
+        {
+          "id": "m_c06_p05",
+          "name": "销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        },
+        {
+          "id": "m_c06_p06",
+          "name": "方案选择与最优决策模型（分段计费、打折卡与票价选择）",
+          "prerequisites": [
+            "m_c05_p05"
+          ]
+        }
+      ]
+    },
+    {
+      "chapter_id": 7,
+      "chapter_name": "第7章 基本的几何图形初步",
+      "page_range": "136-160",
+      "points": [
+        {
+          "id": "m_c07_p01",
+          "name": "几何图形认知：立体图形与平面图形的展开与折叠",
+          "prerequisites": []
+        },
+        {
+          "id": "m_c07_p02",
+          "name": "直线、射线、线段的概念与‘两点确定一条直线’公理",
+          "prerequisites": [
+            "m_c07_p01"
+          ]
+        },
+        {
+          "id": "m_c07_p03",
+          "name": "两点之间线段最短原理与线段中点的计算",
+          "prerequisites": [
+            "m_c07_p02"
+          ]
+        },
+        {
+          "id": "m_c07_p04",
+          "name": "角的概念、度分秒换算与六十进制计算",
+          "prerequisites": [
+            "m_c07_p02"
+          ]
+        },
+        {
+          "id": "m_c07_p05",
+          "name": "角平分线的几何性质与角的大小比较",
+          "prerequisites": [
+            "m_c07_p04"
+          ]
+        },
+        {
+          "id": "m_c07_p06",
+          "name": "余角和补角的概念与‘同角或等角的余角/补角相等’定理",
+          "prerequisites": [
+            "m_c07_p04"
+          ]
+        }
+      ]
+    }
+  ]
+}

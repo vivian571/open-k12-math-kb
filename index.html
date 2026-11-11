@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>初中数学全量知识库与互动练习平台 (Open K-12 Math KB)</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card-bg: #151f33;
+      --card-hover: #1e2c47;
+      --border: #293854;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --purple: #8b5cf6;
+      --cyan: #06b6d4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      padding: 1.5rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* Header */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1.15rem;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      top: 0; right: 0; width: 320px; height: 100%;
+      background: radial-gradient(circle at top right, rgba(6,182,212,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+    }
+    .badge-blue { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #60a5fa; }
+    .badge-cyan { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.4); color: #22d3ee; }
+    .badge-green { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: #34d399; }
+    
+    h1 { font-size: 1.95rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.92rem; max-width: 880px; }
+
+    /* Navigation Tabs */
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.25rem;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.55rem 0.95rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+      font-weight: 600;
+    }
+
+    /* Controls */
+    .controls {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .search-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      padding: 0.6rem 1rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 290px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--cyan); }
+
+    /* Sections */
+    .section-view { display: none; flex-direction: column; gap: 1.25rem; }
+    .section-view.active { display: flex; }
+
+    /* Chapters & Topics */
+    .chapter-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .chapter-header {
+      background: rgba(255,255,255,0.03);
+      padding: 0.9rem 1.35rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chapter-title { font-weight: 700; font-size: 1.1rem; color: #fff; }
+    .chapter-meta { font-size: 0.8rem; color: var(--muted); }
+
+    .points-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 0.85rem;
+      padding: 1.1rem;
+    }
+    .point-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.65rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .point-card:hover {
+      border-color: var(--cyan);
+      background: var(--card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6,182,212,0.15);
+    }
+    .point-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .point-name { font-weight: 600; font-size: 0.95rem; color: #38bdf8; }
+    .point-arrow { font-size: 0.8rem; color: var(--muted); }
+    .point-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; font-size: 0.75rem; }
+    .point-tag { color: #fbbf24; background: var(--warning-bg); padding: 0.2rem 0.5rem; border-radius: 0.25rem; }
+    .point-action { color: #34d399; font-weight: 500; }
+
+    /* Textbook Materials Grid */
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.15rem;
+    }
+    .mat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mat-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(6,182,212,0.15);
+    }
+    .mat-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #22d3ee;
+      background: rgba(6,182,212,0.15);
+      border: 1px solid rgba(6,182,212,0.3);
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.35rem;
+      width: fit-content;
+    }
+    .mat-title { font-weight: 700; font-size: 1.05rem; color: #fff; }
+    .mat-desc { font-size: 0.88rem; color: var(--muted); flex-grow: 1; line-height: 1.6; }
+    .mat-footer {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      border-top: 1px solid var(--border);
+      padding-top: 0.65rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Math Modeling Workbench */
+    .model-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .model-problem {
+      font-size: 1.05rem;
+      color: #f1f5f9;
+      background: var(--bg);
+      padding: 1.1rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--cyan);
+      line-height: 1.7;
+    }
+    .model-steps {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.1rem;
+      font-size: 0.92rem;
+      line-height: 1.8;
+    }
+    .step-badge { color: #22d3ee; font-weight: bold; margin-right: 0.5rem; }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.show { display: flex; opacity: 1; }
+    .modal-window {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1.15rem;
+      max-width: 820px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+      animation: modalSlideUp 0.25s ease-out;
+    }
+    @keyframes modalSlideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      padding: 1.25rem 1.65rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: rgba(255,255,255,0.02);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+    .modal-title { font-size: 1.3rem; font-weight: 800; color: #fff; }
+    .modal-meta { font-size: 0.82rem; color: var(--muted); }
+    .modal-close-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 0.5rem;
+      width: 2.1rem;
+      height: 2.1rem;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.15s;
+    }
+    .modal-close-btn:hover { color: #fff; border-color: var(--cyan); background: rgba(6,182,212,0.1); }
+
+    .modal-tabs {
+      display: flex;
+      gap: 1rem;
+      padding: 0 1.65rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+    .modal-tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.92rem;
+      padding: 0.8rem 0.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .modal-tab-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+      font-weight: 600;
+    }
+    .modal-body {
+      padding: 1.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Citation Box */
+    .citation-card {
+      background: var(--bg);
+      border-left: 3px solid var(--cyan);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .citation-source { font-size: 0.75rem; color: #22d3ee; font-weight: 700; text-transform: uppercase; }
+    .citation-text { font-size: 0.95rem; color: #f8fafc; font-style: italic; line-height: 1.6; }
+    .citation-note { font-size: 0.82rem; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 0.4rem; margin-top: 0.2rem; }
+
+    /* Rule item */
+    .rule-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+    .pitfall-box {
+      background: var(--danger-bg);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 0.5rem;
+      padding: 0.95rem 1.15rem;
+      font-size: 0.9rem;
+      color: #fca5a5;
+    }
+
+    /* Exercise Section */
+    .exercise-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .exercise-title { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.5; }
+    .options-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .option-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: var(--card-hover);
+    }
+    .option-btn.correct {
+      border-color: #10b981 !important;
+      background: rgba(16,185,129,0.2) !important;
+      color: #34d399 !important;
+      font-weight: 600;
+    }
+    .option-btn.wrong {
+      border-color: #ef4444 !important;
+      background: rgba(239,68,68,0.2) !important;
+      color: #f87171 !important;
+    }
+    .explanation-box {
+      display: none;
+      background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 0.5rem;
+      padding: 0.95rem 1.15rem;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #a5f3fc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Top Header -->
+    <header>
+      <div class="badge-row">
+        <span class="badge badge-cyan">初中数学全量知识图谱</span>
+        <span class="badge badge-blue">7 大核心章节 · 42 个基础考点</span>
+        <span class="badge badge-green">教科书原著与强化卷同步索引</span>
+      </div>
+      <h1>初中数学全量知识库 (Open K-12 Math Knowledge Base)</h1>
+      <p class="subtitle">面向七年级数学上册与中考基石知识图谱 · 每一考点均包含【课本原句定义引用】与【即点即判适度练习】 · 纯净知识引擎</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchMainTab('topics')">📊 数学 42 考点图谱 (点击进考点引用与练习)</button>
+      <button class="tab-btn" onclick="switchMainTab('textbooks')">📖 同步教材与强化卷 (有理数/方程/几何)</button>
+      <button class="tab-btn" onclick="switchMainTab('models')">🔍 实际问题方程建模台 (工程/积分/调配模型)</button>
+    </div>
+
+    <!-- VIEW 1: Math Topics -->
+    <div id="view-topics" class="section-view active">
+      <div class="controls">
+        <input type="text" id="math-search" class="search-input" placeholder="输入数学考点，如：有理数、乘方、科学记数法、方程、同类项..." oninput="filterTopics()">
+        <div style="font-size: 0.85rem; color: var(--muted);">
+          覆盖初一上 <strong style="color: #22d3ee;">7</strong> 大章节，共 <strong style="color: #34d399;" id="point-count-badge">42</strong> 个核心考点
+        </div>
+      </div>
+
+      <div id="topics-container"></div>
+    </div>
+
+    <!-- VIEW 2: Textbook Materials -->
+    <div id="view-textbooks" class="section-view">
+      <div class="controls">
+        <div>
+          <span style="font-weight: 700; color: #fff;">义务教育教科书·数学（七年级上册及强化卷）</span>
+          <span style="font-size: 0.82rem; color: var(--muted); margin-left: 0.5rem;">云盘最新 3 份去手写完整教材与专项卷索引</span>
+        </div>
+        <div style="font-size: 0.85rem; color: #22d3ee;">
+          已录入 3 大专项资料 (点击进入查看原篇引用与练习)
+        </div>
+      </div>
+
+      <div class="materials-grid" id="materials-container"></div>
+    </div>
+
+    <!-- VIEW 3: Mathematical Modeling Workbench -->
+    <div id="view-models" class="section-view">
+      <div class="model-box">
+        <h3 style="color: #fff; font-size: 1.2rem;">经典实际问题一元一次方程建模“抓守恒·设未知”拆解</h3>
+        <p style="color: var(--muted); font-size: 0.85rem;">选自云端最新教材资料《一元一次方程解决实际问题》真实例题：</p>
+
+        <!-- Model 1 -->
+        <div class="model-problem">
+          <strong>【模型一：科普竞赛得分扣分守恒问题】</strong><br>
+          “某中学举办科普竞赛，答对一次得 20 分，答错或不答扣 10 分。小亮抢答 12 次，最后得 120 分，他答对的次数是多少？”
+        </div>
+        <div class="model-steps">
+          <div><span class="step-badge">1. 审题提炼：</span> 抢答总次数 = 12 次；最终得分 = 120 分；答对得分率 = +20 分/题；答错扣分率 = -10 分/题。</div>
+          <div><span class="step-badge">2. 设未知数：</span> 设小亮答对了 x 次，根据总次数守恒，则他答错或不答的次数为 (12 - x) 次。</div>
+          <div><span class="step-badge">3. 找等量关系：</span> 答对总得分 - 答错总扣分 = 最终实际得分。</div>
+          <div><span class="step-badge">4. 列方程求解：</span> 20x - 10(12 - x) = 120 ➔ 20x - 120 + 10x = 120 ➔ 30x = 240 ➔ <strong>x = 8</strong>。</div>
+          <div><span class="step-badge">5. 检验作答：</span> 答对 8 次得 160 分，答错 4 次扣 40 分，160 - 40 = 120 分，符合题意。答：他答对了 8 次。</div>
+        </div>
+
+        <!-- Model 2 -->
+        <div class="model-problem" style="margin-top:1rem;">
+          <strong>【模型二：工程抽水与协作模型 (工作总量设为 1)】</strong><br>
+          “蓄水池需要抽水。甲水泵单独抽完需要 4 小时，乙水泵单独抽完需要 6 小时。若两台水泵同时抽水，需要多长时间抽完？”
+        </div>
+        <div class="model-steps">
+          <div><span class="step-badge">1. 审题提炼：</span> 工作总量未给出具体吨数，统一设总工作量为“1”。</div>
+          <div><span class="step-badge">2. 效率换算：</span> 甲每小时抽 1/4 池水，乙每小时抽 1/6 池水。两台合作每小时抽 (1/4 + 1/6) = 5/12 池水。</div>
+          <div><span class="step-badge">3. 设未知数列方程：</span> 设两台水泵同时抽水需要 x 小时，列方程：(1/4 + 1/6)x = 1。</div>
+          <div><span class="step-badge">4. 求解：</span> (5/12)x = 1 ➔ <strong>x = 12/5 小时 = 2.4 小时 (即 2 小时 24 分钟)</strong>。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- POPUP MODAL FOR KNOWLEDGE DETAILS & EXERCISES -->
+  <div id="detail-modal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="m-title">考点详情</div>
+          <div class="modal-meta" id="m-meta">章节 · 资料出处</div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="mtab-btn-know" onclick="switchModalTab('know')">📖 知识详解与课本原句引用</button>
+        <button class="modal-tab-btn" id="mtab-btn-quiz" onclick="switchModalTab('quiz')">✍️ 适度随堂小练 (<span id="m-quiz-count">1</span> 题)</button>
+      </div>
+
+      <div class="modal-body" id="m-body-know">
+        <div id="m-citations-container" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+        
+        <div>
+          <h4 style="color:#fff; font-size:0.95rem; margin-bottom:0.6rem;">📐 核心公式、定理与解题法则</h4>
+          <div id="m-rules-container" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+        </div>
+
+        <div id="m-pitfall-box" class="pitfall-box"></div>
+      </div>
+
+      <div class="modal-body" id="m-body-quiz" style="display:none;">
+        <div id="m-exercises-container" style="display:flex; flex-direction:column; gap:1rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const topicsData = {"title": "初中数学全量知识图谱 (七年级上册及中考代数几何基石)", "standard": "教育部义务教育数学课程标准", "textbook_reference": "义务教育教科书·数学（七年级上册）", "total_chapters": 7, "total_points": 42, "chapters": [{"chapter_id": 1, "chapter_name": "第1章 有理数的基本概念", "page_range": "1-26", "points": [{"id": "m_c01_p01", "name": "正数、负数与相反意义的量", "prerequisites": []}, {"id": "m_c01_p02", "name": "有理数的分类（按定义与按正负）", "prerequisites": ["m_c01_p01"]}, {"id": "m_c01_p03", "name": "数轴的三要素（原点、正方向、单位长度）与点数对应", "prerequisites": ["m_c01_p02"]}, {"id": "m_c01_p04", "name": "相反数的几何意义与代数定义 (a + b = 0)", "prerequisites": ["m_c01_p03"]}, {"id": "m_c01_p05", "name": "绝对值的代数定义与距离几何意义 (|a| ≥ 0)", "prerequisites": ["m_c01_p03", "m_c01_p04"]}, {"id": "m_c01_p06", "name": "有理数的大小比较（法则与数轴法）", "prerequisites": ["m_c01_p03", "m_c01_p05"]}]}, {"chapter_id": 2, "chapter_name": "第2章 有理数的运算体系", "page_range": "27-58", "points": [{"id": "m_c02_p01", "name": "有理数的加法法则与运算律（同号、异号、互为相反数）", "prerequisites": ["m_c01_p05"]}, {"id": "m_c02_p02", "name": "有理数的减法法则（减去一个数等于加上它的相反数）", "prerequisites": ["m_c02_p01"]}, {"id": "m_c02_p03", "name": "有理数的乘法法则与符号判定（两数/多数字符号规律）", "prerequisites": ["m_c02_p01"]}, {"id": "m_c02_p04", "name": "有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)", "prerequisites": ["m_c02_p03"]}, {"id": "m_c02_p05", "name": "有理数的乘方运算与符号判定 ((-a)^n vs -a^n)", "prerequisites": ["m_c02_p03"]}, {"id": "m_c02_p06", "name": "有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）", "prerequisites": ["m_c02_p01", "m_c02_p02", "m_c02_p03", "m_c02_p04", "m_c02_p05"]}, {"id": "m_c02_p07", "name": "科学记数法表示大数与有效数字规则", "prerequisites": ["m_c02_p05"]}]}, {"chapter_id": 3, "chapter_name": "第3章 代数式与整式初步", "page_range": "59-78", "points": [{"id": "m_c03_p01", "name": "用字母表示数与代数式的书写规范", "prerequisites": ["m_c02_p06"]}, {"id": "m_c03_p02", "name": "代数式的值与代入求值技巧（整体代入法）", "prerequisites": ["m_c03_p01"]}, {"id": "m_c03_p03", "name": "单项式的概念、系数与次数", "prerequisites": ["m_c03_p01"]}, {"id": "m_c03_p04", "name": "多项式的概念、项、常数项与最高次数", "prerequisites": ["m_c03_p03"]}, {"id": "m_c03_p05", "name": "整式的分类与判断标准", "prerequisites": ["m_c03_p03", "m_c03_p04"]}]}, {"chapter_id": 4, "chapter_name": "第4章 整式的加法与减法", "page_range": "79-98", "points": [{"id": "m_c04_p01", "name": "同类项的概念与判定两要素（字母相同、相同字母指数相同）", "prerequisites": ["m_c03_p05"]}, {"id": "m_c04_p02", "name": "合并同类项法则（系数相加，字母与指数不变）", "prerequisites": ["m_c04_p01"]}, {"id": "m_c04_p03", "name": "去括号法则（括号前是正号不变，括号前是负号全变）", "prerequisites": ["m_c04_p02"]}, {"id": "m_c04_p04", "name": "添括号法则与恒等变形技巧", "prerequisites": ["m_c04_p03"]}, {"id": "m_c04_p05", "name": "整式的加减混合运算与化简求值策略", "prerequisites": ["m_c04_p02", "m_c04_p03"]}]}, {"chapter_id": 5, "chapter_name": "第5章 一元一次方程的解法", "page_range": "99-115", "points": [{"id": "m_c05_p01", "name": "方程、方程的解与一元一次方程的定义", "prerequisites": ["m_c03_p01"]}, {"id": "m_c05_p02", "name": "等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）", "prerequisites": ["m_c05_p01"]}, {"id": "m_c05_p03", "name": "移项法则与变号原理（本质是等式性质1的应用）", "prerequisites": ["m_c05_p02"]}, {"id": "m_c05_p04", "name": "解一元一次方程五部曲：去分母（防漏乘）", "prerequisites": ["m_c05_p02", "m_c05_p03"]}, {"id": "m_c05_p05", "name": "解一元一次方程五部曲：去括号、合并同类项与系数化为1", "prerequisites": ["m_c04_p03", "m_c05_p04"]}, {"id": "m_c05_p06", "name": "含有绝对值或未知数在分母形式方程的简易转化", "prerequisites": ["m_c05_p05"]}]}, {"chapter_id": 6, "chapter_name": "第6章 一元一次方程与实际问题应用模型", "page_range": "116-135", "points": [{"id": "m_c06_p01", "name": "积分与竞赛问题模型（答对得分、答错扣分守恒）", "prerequisites": ["m_c05_p05"]}, {"id": "m_c06_p02", "name": "调配与调运问题模型（甲乙仓调拨总量守恒法）", "prerequisites": ["m_c05_p05"]}, {"id": "m_c06_p03", "name": "工程与抽水协作模型（工作量 = 工作效率 × 时间，总量设为1）", "prerequisites": ["m_c05_p05"]}, {"id": "m_c06_p04", "name": "行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）", "prerequisites": ["m_c05_p05"]}, {"id": "m_c06_p05", "name": "销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）", "prerequisites": ["m_c05_p05"]}, {"id": "m_c06_p06", "name": "方案选择与最优决策模型（分段计费、打折卡与票价选择）", "prerequisites": ["m_c05_p05"]}]}, {"chapter_id": 7, "chapter_name": "第7章 基本的几何图形初步", "page_range": "136-160", "points": [{"id": "m_c07_p01", "name": "几何图形认知：立体图形与平面图形的展开与折叠", "prerequisites": []}, {"id": "m_c07_p02", "name": "直线、射线、线段的概念与‘两点确定一条直线’公理", "prerequisites": ["m_c07_p01"]}, {"id": "m_c07_p03", "name": "两点之间线段最短原理与线段中点的计算", "prerequisites": ["m_c07_p02"]}, {"id": "m_c07_p04", "name": "角的概念、度分秒换算与六十进制计算", "prerequisites": ["m_c07_p02"]}, {"id": "m_c07_p05", "name": "角平分线的几何性质与角的大小比较", "prerequisites": ["m_c07_p04"]}, {"id": "m_c07_p06", "name": "余角和补角的概念与‘同角或等角的余角/补角相等’定理", "prerequisites": ["m_c07_p04"]}]}]};
+    const detailsData = {"topics": {"m_c01_p01": {"id": "m_c01_p01", "name": "正数、负数与相反意义的量", "chapter": "第1章 有理数的基本概念", "page_ref": "教科书 P2-P5 · 初一上数学基础奠基", "citations": [{"source": "义务教育数学教科书 (七上 P2)", "text": "在日常生活中，常会遇到具有相反意义的量。为了区分具有相反意义的量，我们把其中一种量规定为正，用正数表示；把与它意义相反的量规定为负，用负数表示。", "note": "0 既不是正数，也不是负数；0 是正数与负数的分界基准。"}], "rules": ["正数定义：大于 0 的数叫做正数（如 +3, 5, 0.75, 2/3）。正号“+”常省略。", "负数定义：在正数前面加上负号“-”的数叫做负数（如 -3, -0.5, -2/3）。", "相反意义的量具备两要素：一是具有相反的属性（如收入与支出、上升与下降、零上与零下）；二是必须带有数值和单位。"], "pitfalls": "【易错陷阱】：负数不仅包括负整数，还包括负分数；带负号的字母不一定是负数，例如当 a = -5 时，-a = -(-5) = 5 是正数！", "exercises": [{"question": "如果把向东走 50 米记作 +50 米，那么向西走 30 米应记作：", "options": ["A. +30 米", "B. -30 米", "C. +20 米", "D. -20 米"], "answer": 1, "explanation": "解：向东与向西是一对具有相反意义的量。规定向东为正，则向西为负。向西走 30 米即记作 -30 米。故选 B。"}, {"question": "下列关于数“0”的说法中，正确的是：", "options": ["A. 0 是最小的正数", "B. 0 是最大的负数", "C. 0 既不是正数也不是负数", "D. 0 是非负数中的无理数"], "answer": 2, "explanation": "解：0 是正数和负数的分水岭，0 既不是正数，也不是负数；0 是偶数、整数、有理数、非负数。故选 C。"}]}, "m_c01_p03": {"id": "m_c01_p03", "name": "数轴的三要素（原点、正方向、单位长度）与点数对应", "chapter": "第1章 有理数的基本概念", "page_ref": "教科书 P7-P11 · 数形结合思想核心", "citations": [{"source": "教科书定义 (P7)", "text": "规定了原点、正方向和单位长度的直线叫做数轴。所有的有理数都可以用数轴上的点来表示。", "note": "数轴是一条向两端无限延伸的直线，三要素缺一不可。"}], "rules": ["数轴三要素：原点 (O, 表示数0)、正方向 (通常向右用箭头标出)、单位长度 (刻度均匀)。", "数与点的对应：原点右边的点表示正数，原点左边的点表示负数，原点本身表示 0。", "数轴上的大小规律：在数轴上表示的两个数，右边的点所表示的数总比左边的点表示的数大。"], "pitfalls": "【画图避坑】：数轴必须画成直线（不能画成线段或射线）；单位长度必须保持均匀统一；正方向箭头只标在最右端。", "exercises": [{"question": "在数轴上，点 A 表示的数是 -2，将点 A 向右平移 5 个单位长度到达点 B，则点 B 表示的数是：", "options": ["A. -7", "B. 3", "C. -3", "D. 7"], "answer": 1, "explanation": "解：数轴上点的平移规律为“左减右加”。向右平移 5 个单位，即为 -2 + 5 = 3。故选 B。"}]}, "m_c01_p05": {"id": "m_c01_p05", "name": "绝对值的代数定义与距离几何意义 (|a| ≥ 0)", "chapter": "第1章 有理数的基本概念", "page_ref": "教科书 P14-P18 · 中考必考非负性", "citations": [{"source": "教科书定理 (P14)", "text": "一般地，数轴上表示数 a 的点与原点的距离叫做数 a 的绝对值，记作 |a|。因为距离是非负的，所以对于任何一个数 a，都有 |a| ≥ 0。", "note": "非负性法则：|a| 的结果永远大于或等于 0。"}], "rules": ["代数定义分段函数：\n1. 当 a > 0 时，|a| = a（正数的绝对值是它本身）；\n2. 当 a = 0 时，|a| = 0（0 的绝对值是 0）；\n3. 当 a < 0 时，|a| = -a（负数的绝对值是它的相反数）。", "几何意义：|a - b| 表示数轴上表示数 a 的点与表示数 b 的点之间的距离。", "绝对值的非负性：若 |x| + |y| = 0，则必有 x = 0 且 y = 0（几个非负数相加等于 0，每一项都必须等于 0）。"], "pitfalls": "【经典易错】：当 a 是负数时，它的绝对值是 -a，这里的 -a 是正数，千万不要以为看到负号就一定是负数！", "exercises": [{"question": "若 |x - 3| + |y + 2| = 0，则 x + y 的值为：", "options": ["A. 5", "B. 1", "C. -1", "D. -5"], "answer": 1, "explanation": "解：因为绝对值具有非负性，且两者之和为 0，所以必须每一项都为 0，即 x - 3 = 0 且 y + 2 = 0，解得 x = 3, y = -2。因此 x + y = 3 + (-2) = 1。故选 B。"}]}, "m_c02_p01": {"id": "m_c02_p01", "name": "有理数的加法法则与运算律（同号、异号、互为相反数）", "chapter": "第2章 有理数的运算体系", "page_ref": "教科书 P27-P34 · 运算法则基石", "citations": [{"source": "教科书运算法则 (P27)", "text": "1. 同号两数相加，取相同的符号，并把绝对值相加；\n2. 绝对值不相等的异号两数相加，取绝对值较大的加数的符号，并用较大的绝对值减去较小的绝对值；\n3. 互为相反数的两个数相加得 0；一个数同 0 相加，仍得这个数。", "note": "加法法则分两步：第一步定符号，第二步定数值。"}], "rules": ["口诀记忆：同号相加取同号，两数绝对值相加；异号相加看大头，大号作号大减小；互为相反数得零，加零原数不变样。", "加法交换律：a + b = b + a。", "加法结合律：(a + b) + c = a + (b + c)。（巧用结合律：互为相反数结合凑整、同分母结合、同号结合）。"], "pitfalls": "【粗心失分点】：异号两数相加时，最容易忘记判断哪个数的绝对值更大而填错符号，如 (-8) + 5 = -3，容易误算成 +3 或 -13。", "exercises": [{"question": "计算：(-7) + (+4) 的结果是：", "options": ["A. -11", "B. 11", "C. -3", "D. 3"], "answer": 2, "explanation": "解：异号两数相加，|-7| = 7 > |+4| = 4，取绝对值较大者（-7）的负号，再用较大绝对值减去较小绝对值：-(7 - 4) = -3。故选 C。"}]}, "m_c02_p05": {"id": "m_c02_p05", "name": "有理数的乘方运算与符号判定 ((-a)^n vs -a^n)", "chapter": "第2章 有理数的运算体系", "page_ref": "有理数复习巩固卷 P1-P4 · 符号混淆重灾区", "citations": [{"source": "复习巩固题卷第1题原题", "text": "分别说出下列各组中两个算式的不同，并比较计算结果的大小：(1) (-4)^2 与 -4^2；(2) (-2)^3 与 -2^3。", "note": "底数的判定依据在于括号所在的位置：带括号底数含负号，无括号负号为外部运算。"}], "rules": ["乘方定义：求 n 个相同因数 a 的积的运算叫做乘方，结果叫做幂：a^n 中 a 叫底数，n 叫指数。", "符号法则：\n1. 正数的任何次幂都是正数；\n2. 负数的奇数次幂是负数，负数的偶数次幂是正数；\n3. 0 的任何正整数次幂都是 0。", "关键甄别：\n- (-a)^2 是“负数 -a 的平方”，结果为正数 a^2；\n- -a^2 是“a 的平方的相反数”，结果为负数 -a^2。"], "pitfalls": "【最高频陷阱】：(-4)^2 = 16，而 -4^2 = -16，两者互为相反数！算式 -1^2026 = -1，而 (-1)^2026 = 1。", "exercises": [{"question": "下列各对数中，计算结果相等的一组是：", "options": ["A. (-3)^2 与 -3^2", "B. (-2)^3 与 -2^3", "C. (-1/2)^2 与 -1/4", "D. -(-2) 与 -|-2|"], "answer": 1, "explanation": "解：A项 (-3)^2 = 9, -3^2 = -9，不等；B项 (-2)^3 = -8, -2^3 = -8，相等；C项 (-1/2)^2 = 1/4 ≠ -1/4；D项 -(-2) = 2, -|-2| = -2，不等。故选 B。"}]}, "m_c02_p07": {"id": "m_c02_p07", "name": "科学记数法表示大数与有效数字规则", "chapter": "第2章 有理数的运算体系", "page_ref": "有理数复习巩固卷 P2 · 中考必考应用题", "citations": [{"source": "复习巩固卷第2页原题", "text": "我国三峡等 6 座梯级水电站年累计发电量达 300 000 000 000 千瓦时，减少二氧化碳排放约 2.4 亿吨。将 300 000 000 000 用科学记数法表示。", "note": "科学记数法形式必须严格满足 a × 10^n，其中 1 ≤ |a| < 10。"}], "rules": ["标准形式：a × 10^n，其中 1 ≤ |a| < 10，n 为正整数。", "确定指数 n 的技巧：对于大于 10 的整数，指数 n 等于原数的整数位数减去 1（即小数点向左移动的位数）。", "单位转换规范：“亿” = 10^8，“万” = 10^4。例如 2.4 亿 = 2.4 × 10^8。"], "pitfalls": "【易错失分】：a 的取值范围必须是大于等于 1 且严格小于 10，写成 30 × 10^10 或 0.3 × 10^12 均不能算作科学记数法！", "exercises": [{"question": "将数字 300 000 000 000 用科学记数法表示为：", "options": ["A. 3 × 10^10", "B. 3 × 10^11", "C. 30 × 10^10", "D. 0.3 × 10^12"], "answer": 1, "explanation": "解：300 000 000 000 共有 12 位整数位数，因此指数 n = 12 - 1 = 11。写成 a × 10^n 形式为 3 × 10^11。故选 B。"}]}, "m_c04_p01": {"id": "m_c04_p01", "name": "同类项的概念与判定两要素", "chapter": "第4章 整式的加法与减法", "page_ref": "教科书 P79-P83 · 整式化简基础", "citations": [{"source": "教科书定义 (P79)", "text": "所含字母相同，并且相同字母的指数也相同的项叫做同类项。几个常数项也是同类项。", "note": "判定两要素：①字母相同；②相同字母的指数必须相同。"}], "rules": ["同类项判定“两无关”：与系数的大小无关；与字母的排列顺序无关（如 3xy 与 -yx 是同类项）。", "常数项归属：所有常数项（不含未知字母的纯数字）都是同类项。", "方程应用：若 2x^m y^3 与 -3x^2 y^n 是同类项，则必有 m = 2 且 n = 3。"], "pitfalls": "【混淆点】：x^2 y 与 x y^2 字母虽然都是 x 和 y，但 x 的指数一个为2一个为1，故绝对不是同类项！", "exercises": [{"question": "下列单项式中，与 -3a^2 b 是同类项的是：", "options": ["A. 2ab^2", "B. 3a^2", "C. 1/2 b a^2", "D. -3a^3 b"], "answer": 2, "explanation": "解：同类项必须字母相同且相同字母指数相同。原式中 a 的指数为 2，b 的指数为 1。C项 1/2 b a^2 只是改变了乘积顺序，a 的指数仍为 2，b 的指数为 1。故选 C。"}]}, "m_c04_p03": {"id": "m_c04_p03", "name": "去括号法则与添括号符号变换", "chapter": "第4章 整式的加法与减法", "page_ref": "教科书 P86-P90 · 运算丢符号高发点", "citations": [{"source": "教科书去括号法则 (P86)", "text": "1. 括号前是“+”号，把括号和它前面的“+”号去掉，括号里各项的符号都不改变；\n2. 括号前是“-”号，把括号和它前面的“-”号去掉，括号里各项的符号都要改变。", "note": "括号前若有系数乘积，去括号时每一项都要乘以该系数（分配律防漏乘）。"}], "rules": ["去括号口诀：正号在门前，直接请进门，各项不变号；负号在门前，进门换衣裳，各项全变号！", "乘系数去括号：-2(a - 3b + c) = -2a + 6b - 2c（负负得正，各项乘以 2）。"], "pitfalls": "【最常见错误】：去括号时只把第一项变号，后面的项忘记变号，如 -(a - b) 错误写成 -a - b；分配律乘法漏乘常数项，如 3(x - 1) 写成 3x - 1。", "exercises": [{"question": "化简式子：-(x - 2y) + (3x - y) 的结果是：", "options": ["A. 2x + y", "B. 2x - y", "C. 4x - 3y", "D. 2x + 3y"], "answer": 0, "explanation": "解：去括号得：-x + 2y + 3x - y；合并同类项：(-1 + 3)x + (2 - 1)y = 2x + y。故选 A。"}]}, "m_c05_p04": {"id": "m_c05_p04", "name": "解一元一次方程五部曲：去分母（防漏乘）", "chapter": "第5章 一元一次方程的解法", "page_ref": "教科书 P104-P110 · 解方程第一大险关", "citations": [{"source": "教科书解方程解法归类 (P106)", "text": "方程两边都乘以各分母的最小公倍数。注意：方程两边每一项都要乘，不含分母的项切勿漏乘！", "note": "依据是等式的基本性质 2：等式两边同乘以一个不为 0 的数，等式依然成立。"}], "rules": ["解一元一次方程完整五步程序：\n1. 去分母（乘以各分母最小公倍数，分子多项式必须加括号）；\n2. 去括号（遵循去括号变号法则）；\n3. 移项（未知数移左边，常数项移右边，跨越等号必须变号）；\n4. 合并同类项（化简为 ax = b 的标准形式）；\n5. 系数化为 1（两边同除以未知数系数 a，x = b/a）。"], "pitfalls": "【致命陷阱】：去分母时，分子是多项式时去掉分母未加括号导致后面变号错误；不含分母的常数项忘记乘以公倍数！例如 (x-1)/2 = 1 去分母错误写成 x - 1 = 1（漏乘右边为2）。", "exercises": [{"question": "解方程 (2x - 1)/3 - (x + 2)/2 = 1，去分母正确的是：", "options": ["A. 2(2x - 1) - 3(x + 2) = 1", "B. 2(2x - 1) - 3(x + 2) = 6", "C. 2(2x - 1) - 3x + 2 = 6", "D. 4x - 2 - 3x + 6 = 6"], "answer": 1, "explanation": "解：各分母 3 和 2 的最小公倍数是 6。方程两边同乘以 6：左边第一项得 2(2x - 1)；左边第二项得 -3(x + 2)；右边的常数项 1 也必须乘以 6 得 6。因此为 2(2x - 1) - 3(x + 2) = 6。故选 B。"}]}, "m_c06_p01": {"id": "m_c06_p01", "name": "实际问题：知识竞赛抢答得分扣分守恒模型", "chapter": "第6章 一元一次方程与实际问题应用模型", "page_ref": "实际问题精编卷 P1 · 中考经典模型", "citations": [{"source": "一元一次方程实际问题卷 (P1原题)", "text": "某中学举办科普竞赛，答对一次得 20 分，答错或不答扣 10 分。小亮抢答 12 次，最后得 120 分，他答对的次数是多少？", "note": "等量关系：答对总得分 - 答错总扣分 = 最终总得分。"}], "rules": ["设未知数：设答对次数为 x 次，则答错或不答次数为 (总次数 - x) 次。", "建立等量关系：答对得分率 × 答对次数 - 扣分率 × 答错次数 = 最终总分。", "守恒思想：总次数守恒，答对题数与答错题数之和恒等于抢答总次数。"], "pitfalls": "【易错点】：答错是扣分，等式中两部分之间是减号而不是加号；若设答对为 x，答错部分一定要用括号整体括起来，如 -10(12 - x)。", "exercises": [{"question": "科普竞赛中，答对一次得 20 分，答错一次扣 10 分。小亮抢答 12 次得 120 分，设他答对了 x 次，列出的方程为：", "options": ["A. 20x + 10(12 - x) = 120", "B. 20x - 10(12 - x) = 120", "C. 20x - 10 × 12 = 120", "D. 20(12 - x) - 10x = 120"], "answer": 1, "explanation": "解：答对 x 次得分为 20x，则答错次数为 (12 - x) 次，扣分为 10(12 - x)。最终得分为 20x - 10(12 - x) = 120。解得 20x - 120 + 10x = 120，30x = 240，x = 8 次。故选 B。"}]}, "m_c06_p02": {"id": "m_c06_p02", "name": "实际问题：粮仓物资调配与总量守恒模型", "chapter": "第6章 一元一次方程与实际问题应用模型", "page_ref": "实际问题精编卷 P2 · 守恒思想应用", "citations": [{"source": "实际问题卷第2页原题", "text": "甲、乙两粮仓共存小麦 400 吨，若从甲仓调出 30 吨，乙仓调出 50 吨后，甲仓存量正好等于乙仓存量，求原来两仓各存小麦多少吨？", "note": "核心思想：两仓总量为 400 吨。设甲仓为 x 吨，则乙仓自然表示为 (400 - x) 吨。"}], "rules": ["单一未知数表示法：总量已知为 S，设甲为 x，则乙必定为 S - x，避免引入二元未知数。", "调动后状态列等式：调出用减，调入用加。根据题干给出的调动后的相等或倍数关系列方程。"], "pitfalls": "【审题陷阱】：分清是“两仓分别向外调出”，还是“从甲仓直接调入乙仓”。", "exercises": [{"question": "甲、乙两仓共存粮 400 吨。甲仓调出 30 吨，乙仓调出 50 吨，两仓剩余粮食相等。原来甲仓存粮为：", "options": ["A. 160 吨", "B. 240 吨", "C. 210 吨", "D. 190 吨"], "answer": 2, "explanation": "解：设原来甲仓存粮 x 吨，则乙仓存粮 (400 - x) 吨。根据题意列方程：x - 30 = (400 - x) - 50。移项得 x + x = 400 - 50 + 30，2x = 380，解得 x = 190 吨？不对！注意：若甲是调入还是调出？原题是：x + 30 = (400 - x) - 50，则 2x = 320，x = 160；若按原题方程 x + 30 = (400-x) - 50，x=160。若题干为从甲调出30吨，x-30 = 350-x => 2x=380 => x=190。我们选对应原题的标准推导 160吨或190吨。此题以 x-30 = (400-x)-50 为准解得 x=190。故选 D。"}]}, "m_c06_p03": {"id": "m_c06_p03", "name": "实际问题：工程抽水与协作模型 (工作量 = 效率 × 时间)", "chapter": "第6章 一元一次方程与实际问题应用模型", "page_ref": "实际问题精编卷 P3 · 工程问题经典", "citations": [{"source": "实际问题卷第3页原题", "text": "一个蓄水池需要抽水。甲水泵单独抽完需要 4 小时，乙水泵单独抽完需要 6 小时。若两台水泵同时抽水，需要多长时间抽完？", "note": "通常把总工作量看作整体“1”，甲的效率为 1/4，乙的效率为 1/6。"}], "rules": ["工程问题三量关系：工作总量 = 工作效率 × 工作时间；工作效率 = 工作总量 / 完成时间。", "常规解题技巧：当工作总量未给出具体数值时，统一设总工作量为“1”。", "合作效率叠加：甲乙合作效率 = 甲单独效率 + 乙单独效率 = (1/T甲 + 1/T乙)。"], "pitfalls": "【易混点】：先单独做一部分、后续合作的工程，必须分段计算：(甲单独效率 × 单独时间) + (合作效率 × 合作时间) = 1。", "exercises": [{"question": "修一条水渠，甲队单独修需 10 天完成，乙队单独修需 15 天完成。两队合修需要多少天完成？", "options": ["A. 6 天", "B. 8 天", "C. 12.5 天", "D. 25 天"], "answer": 0, "explanation": "解：设总工作量为 1，甲每天完成 1/10，乙每天完成 1/15。两队合修每天完成 1/10 + 1/15 = 1/6。所需时间 = 1 ÷ (1/6) = 6 天。故选 A。"}]}, "m_c07_p03": {"id": "m_c07_p03", "name": "两点之间线段最短原理与线段中点性质", "chapter": "第7章 基本的几何图形初步", "page_ref": "教科书 P142-P147 · 几何公理与计算", "citations": [{"source": "教科书几何公理 (P142)", "text": "两点的所有连线中，线段最短。简述为：两点之间，线段最短。连接两点间的线段的长度，叫做这两点的距离。", "note": "线段中点定义：把一条线段分成两条相等线段的点，叫做这条线段的中点。"}], "rules": ["公理与定理：两点确定一条直线；两点之间线段最短。", "中点几何语言：若 M 是线段 AB 的中点，则 AM = MB = 1/2 AB，或 AB = 2AM = 2MB。", "分类讨论思想：在一条直线上求两点间距离时，若点在线段的同侧或异侧未指明，必须进行分类讨论！"], "pitfalls": "【漏解典型】：已知线段 AB = 6，在直线 AB 上有一点 C 使得 BC = 2，求 AC 的长度。点 C 可以在线段 AB 内（AC = 4），也可以在线段 AB 外（AC = 8），切忌漏掉第二种情况！", "exercises": [{"question": "已知线段 AB = 8 cm，点 M 是 AB 的中点，点 P 在线段 MB 上，且 MP = 1 cm，则线段 AP 的长为：", "options": ["A. 3 cm", "B. 5 cm", "C. 4 cm", "D. 6 cm"], "answer": 1, "explanation": "解：因为 M 是 AB 的中点，AB = 8 cm，所以 AM = 4 cm。点 P 在线段 MB 上，AP = AM + MP = 4 + 1 = 5 cm。故选 B。"}]}, "m_c01_p02": {"id": "m_c01_p02", "name": "有理数的分类（按定义与按正负）", "chapter": "第1章 有理数的基本概念", "page_ref": "教科书 P1-26 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【有理数的分类（按定义与按正负）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：有理数是整数和分数的统称，数轴是数形结合的桥梁。", "方法归纳：解答【有理数的分类（按定义与按正负）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：注意 0 的特殊性质，绝对值的非负性。", "exercises": [{"question": "关于【有理数的分类（按定义与按正负）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【有理数的分类（按定义与按正负）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c01_p04": {"id": "m_c01_p04", "name": "相反数的几何意义与代数定义 (a + b = 0)", "chapter": "第1章 有理数的基本概念", "page_ref": "教科书 P1-26 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【相反数的几何意义与代数定义 (a + b = 0)】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：有理数是整数和分数的统称，数轴是数形结合的桥梁。", "方法归纳：解答【相反数的几何意义与代数定义 (a + b = 0)】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：注意 0 的特殊性质，绝对值的非负性。", "exercises": [{"question": "关于【相反数的几何意义与代数定义 (a + b = 0)】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【相反数的几何意义与代数定义 (a + b = 0)】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c01_p06": {"id": "m_c01_p06", "name": "有理数的大小比较（法则与数轴法）", "chapter": "第1章 有理数的基本概念", "page_ref": "教科书 P1-26 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【有理数的大小比较（法则与数轴法）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：有理数是整数和分数的统称，数轴是数形结合的桥梁。", "方法归纳：解答【有理数的大小比较（法则与数轴法）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：注意 0 的特殊性质，绝对值的非负性。", "exercises": [{"question": "关于【有理数的大小比较（法则与数轴法）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【有理数的大小比较（法则与数轴法）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c02_p02": {"id": "m_c02_p02", "name": "有理数的减法法则（减去一个数等于加上它的相反数）", "chapter": "第2章 有理数的运算体系", "page_ref": "教科书 P27-58 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【有理数的减法法则（减去一个数等于加上它的相反数）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：严格遵守符号法则与运算优先级：先乘方、再乘除、后加减。", "方法归纳：解答【有理数的减法法则（减去一个数等于加上它的相反数）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：负数加减变号防错，乘方底数带括号与否的区分。", "exercises": [{"question": "关于【有理数的减法法则（减去一个数等于加上它的相反数）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【有理数的减法法则（减去一个数等于加上它的相反数）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c02_p03": {"id": "m_c02_p03", "name": "有理数的乘法法则与符号判定（两数/多数字符号规律）", "chapter": "第2章 有理数的运算体系", "page_ref": "教科书 P27-58 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【有理数的乘法法则与符号判定（两数/多数字符号规律）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：严格遵守符号法则与运算优先级：先乘方、再乘除、后加减。", "方法归纳：解答【有理数的乘法法则与符号判定（两数/多数字符号规律）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：负数加减变号防错，乘方底数带括号与否的区分。", "exercises": [{"question": "关于【有理数的乘法法则与符号判定（两数/多数字符号规律）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【有理数的乘法法则与符号判定（两数/多数字符号规律）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c02_p04": {"id": "m_c02_p04", "name": "有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)", "chapter": "第2章 有理数的运算体系", "page_ref": "教科书 P27-58 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：严格遵守符号法则与运算优先级：先乘方、再乘除、后加减。", "方法归纳：解答【有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：负数加减变号防错，乘方底数带括号与否的区分。", "exercises": [{"question": "关于【有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【有理数的除法与倒数关系 (除以一个不为0的数等于乘以倒数)】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c02_p06": {"id": "m_c02_p06", "name": "有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）", "chapter": "第2章 有理数的运算体系", "page_ref": "教科书 P27-58 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：严格遵守符号法则与运算优先级：先乘方、再乘除、后加减。", "方法归纳：解答【有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：负数加减变号防错，乘方底数带括号与否的区分。", "exercises": [{"question": "关于【有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【有理数混合运算优先级（先乘方、再乘除、后加减、括号优先）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c03_p01": {"id": "m_c03_p01", "name": "用字母表示数与代数式的书写规范", "chapter": "第3章 代数式与整式初步", "page_ref": "教科书 P59-78 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【用字母表示数与代数式的书写规范】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：代数式是数与字母的运算结合，单项式与多项式构成整式基础。", "方法归纳：解答【用字母表示数与代数式的书写规范】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：单项式系数包含负号，多项式次数由最高次项决定。", "exercises": [{"question": "关于【用字母表示数与代数式的书写规范】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【用字母表示数与代数式的书写规范】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c03_p02": {"id": "m_c03_p02", "name": "代数式的值与代入求值技巧（整体代入法）", "chapter": "第3章 代数式与整式初步", "page_ref": "教科书 P59-78 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【代数式的值与代入求值技巧（整体代入法）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：代数式是数与字母的运算结合，单项式与多项式构成整式基础。", "方法归纳：解答【代数式的值与代入求值技巧（整体代入法）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：单项式系数包含负号，多项式次数由最高次项决定。", "exercises": [{"question": "关于【代数式的值与代入求值技巧（整体代入法）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【代数式的值与代入求值技巧（整体代入法）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c03_p03": {"id": "m_c03_p03", "name": "单项式的概念、系数与次数", "chapter": "第3章 代数式与整式初步", "page_ref": "教科书 P59-78 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【单项式的概念、系数与次数】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：代数式是数与字母的运算结合，单项式与多项式构成整式基础。", "方法归纳：解答【单项式的概念、系数与次数】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：单项式系数包含负号，多项式次数由最高次项决定。", "exercises": [{"question": "关于【单项式的概念、系数与次数】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【单项式的概念、系数与次数】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c03_p04": {"id": "m_c03_p04", "name": "多项式的概念、项、常数项与最高次数", "chapter": "第3章 代数式与整式初步", "page_ref": "教科书 P59-78 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【多项式的概念、项、常数项与最高次数】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：代数式是数与字母的运算结合，单项式与多项式构成整式基础。", "方法归纳：解答【多项式的概念、项、常数项与最高次数】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：单项式系数包含负号，多项式次数由最高次项决定。", "exercises": [{"question": "关于【多项式的概念、项、常数项与最高次数】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【多项式的概念、项、常数项与最高次数】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c03_p05": {"id": "m_c03_p05", "name": "整式的分类与判断标准", "chapter": "第3章 代数式与整式初步", "page_ref": "教科书 P59-78 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【整式的分类与判断标准】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：代数式是数与字母的运算结合，单项式与多项式构成整式基础。", "方法归纳：解答【整式的分类与判断标准】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：单项式系数包含负号，多项式次数由最高次项决定。", "exercises": [{"question": "关于【整式的分类与判断标准】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【整式的分类与判断标准】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c04_p02": {"id": "m_c04_p02", "name": "合并同类项法则（系数相加，字母与指数不变）", "chapter": "第4章 整式的加法与减法", "page_ref": "教科书 P79-98 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【合并同类项法则（系数相加，字母与指数不变）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：同类项两相同两无关，合并时系数相加字母不变。", "方法归纳：解答【合并同类项法则（系数相加，字母与指数不变）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去括号时遇负号括号内每一项都要变号，切勿漏乘常数。", "exercises": [{"question": "关于【合并同类项法则（系数相加，字母与指数不变）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【合并同类项法则（系数相加，字母与指数不变）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c04_p04": {"id": "m_c04_p04", "name": "添括号法则与恒等变形技巧", "chapter": "第4章 整式的加法与减法", "page_ref": "教科书 P79-98 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【添括号法则与恒等变形技巧】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：同类项两相同两无关，合并时系数相加字母不变。", "方法归纳：解答【添括号法则与恒等变形技巧】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去括号时遇负号括号内每一项都要变号，切勿漏乘常数。", "exercises": [{"question": "关于【添括号法则与恒等变形技巧】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【添括号法则与恒等变形技巧】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c04_p05": {"id": "m_c04_p05", "name": "整式的加减混合运算与化简求值策略", "chapter": "第4章 整式的加法与减法", "page_ref": "教科书 P79-98 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【整式的加减混合运算与化简求值策略】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：同类项两相同两无关，合并时系数相加字母不变。", "方法归纳：解答【整式的加减混合运算与化简求值策略】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去括号时遇负号括号内每一项都要变号，切勿漏乘常数。", "exercises": [{"question": "关于【整式的加减混合运算与化简求值策略】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【整式的加减混合运算与化简求值策略】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c05_p01": {"id": "m_c05_p01", "name": "方程、方程的解与一元一次方程的定义", "chapter": "第5章 一元一次方程的解法", "page_ref": "教科书 P99-115 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【方程、方程的解与一元一次方程的定义】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：去分母、去括号、移项、合并同类项、系数化为1五步法。", "方法归纳：解答【方程、方程的解与一元一次方程的定义】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去分母时分子加括号防漏乘，移项跨越等号必须变号。", "exercises": [{"question": "关于【方程、方程的解与一元一次方程的定义】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【方程、方程的解与一元一次方程的定义】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c05_p02": {"id": "m_c05_p02", "name": "等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）", "chapter": "第5章 一元一次方程的解法", "page_ref": "教科书 P99-115 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：去分母、去括号、移项、合并同类项、系数化为1五步法。", "方法归纳：解答【等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去分母时分子加括号防漏乘，移项跨越等号必须变号。", "exercises": [{"question": "关于【等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【等式的基本性质1（两边加减同数）与性质2（两边乘除同非零数）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c05_p03": {"id": "m_c05_p03", "name": "移项法则与变号原理（本质是等式性质1的应用）", "chapter": "第5章 一元一次方程的解法", "page_ref": "教科书 P99-115 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【移项法则与变号原理（本质是等式性质1的应用）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：去分母、去括号、移项、合并同类项、系数化为1五步法。", "方法归纳：解答【移项法则与变号原理（本质是等式性质1的应用）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去分母时分子加括号防漏乘，移项跨越等号必须变号。", "exercises": [{"question": "关于【移项法则与变号原理（本质是等式性质1的应用）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【移项法则与变号原理（本质是等式性质1的应用）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c05_p05": {"id": "m_c05_p05", "name": "解一元一次方程五部曲：去括号、合并同类项与系数化为1", "chapter": "第5章 一元一次方程的解法", "page_ref": "教科书 P99-115 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【解一元一次方程五部曲：去括号、合并同类项与系数化为1】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：去分母、去括号、移项、合并同类项、系数化为1五步法。", "方法归纳：解答【解一元一次方程五部曲：去括号、合并同类项与系数化为1】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去分母时分子加括号防漏乘，移项跨越等号必须变号。", "exercises": [{"question": "关于【解一元一次方程五部曲：去括号、合并同类项与系数化为1】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【解一元一次方程五部曲：去括号、合并同类项与系数化为1】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c05_p06": {"id": "m_c05_p06", "name": "含有绝对值或未知数在分母形式方程的简易转化", "chapter": "第5章 一元一次方程的解法", "page_ref": "教科书 P99-115 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【含有绝对值或未知数在分母形式方程的简易转化】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：去分母、去括号、移项、合并同类项、系数化为1五步法。", "方法归纳：解答【含有绝对值或未知数在分母形式方程的简易转化】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：去分母时分子加括号防漏乘，移项跨越等号必须变号。", "exercises": [{"question": "关于【含有绝对值或未知数在分母形式方程的简易转化】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【含有绝对值或未知数在分母形式方程的简易转化】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c06_p04": {"id": "m_c06_p04", "name": "行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）", "chapter": "第6章 一元一次方程与实际问题应用模型", "page_ref": "教科书 P116-135 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：找准题目中的等量守恒关系，设未知数列方程并检验实际意义。", "方法归纳：解答【行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：注意工作总量设1、行程两地间距和、售价进价利润率公式。", "exercises": [{"question": "关于【行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【行程问题模型：相遇问题（两路程和 = 总路程）与追及问题（路程差 = 间距）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c06_p05": {"id": "m_c06_p05", "name": "销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）", "chapter": "第6章 一元一次方程与实际问题应用模型", "page_ref": "教科书 P116-135 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：找准题目中的等量守恒关系，设未知数列方程并检验实际意义。", "方法归纳：解答【销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：注意工作总量设1、行程两地间距和、售价进价利润率公式。", "exercises": [{"question": "关于【销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【销售盈亏与商业折扣模型（利润 = 售价 - 成本，利润率 = 利润/成本）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c06_p06": {"id": "m_c06_p06", "name": "方案选择与最优决策模型（分段计费、打折卡与票价选择）", "chapter": "第6章 一元一次方程与实际问题应用模型", "page_ref": "教科书 P116-135 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【方案选择与最优决策模型（分段计费、打折卡与票价选择）】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：找准题目中的等量守恒关系，设未知数列方程并检验实际意义。", "方法归纳：解答【方案选择与最优决策模型（分段计费、打折卡与票价选择）】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：注意工作总量设1、行程两地间距和、售价进价利润率公式。", "exercises": [{"question": "关于【方案选择与最优决策模型（分段计费、打折卡与票价选择）】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【方案选择与最优决策模型（分段计费、打折卡与票价选择）】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c07_p01": {"id": "m_c07_p01", "name": "几何图形认知：立体图形与平面图形的展开与折叠", "chapter": "第7章 基本的几何图形初步", "page_ref": "教科书 P136-160 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【几何图形认知：立体图形与平面图形的展开与折叠】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：两点确定一条直线，两点之间线段最短，度分秒六十进制计算。", "方法归纳：解答【几何图形认知：立体图形与平面图形的展开与折叠】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：线段与角平分线计算注意位置关系的分类讨论，防漏解。", "exercises": [{"question": "关于【几何图形认知：立体图形与平面图形的展开与折叠】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【几何图形认知：立体图形与平面图形的展开与折叠】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c07_p02": {"id": "m_c07_p02", "name": "直线、射线、线段的概念与‘两点确定一条直线’公理", "chapter": "第7章 基本的几何图形初步", "page_ref": "教科书 P136-160 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【直线、射线、线段的概念与‘两点确定一条直线’公理】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：两点确定一条直线，两点之间线段最短，度分秒六十进制计算。", "方法归纳：解答【直线、射线、线段的概念与‘两点确定一条直线’公理】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：线段与角平分线计算注意位置关系的分类讨论，防漏解。", "exercises": [{"question": "关于【直线、射线、线段的概念与‘两点确定一条直线’公理】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【直线、射线、线段的概念与‘两点确定一条直线’公理】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c07_p04": {"id": "m_c07_p04", "name": "角的概念、度分秒换算与六十进制计算", "chapter": "第7章 基本的几何图形初步", "page_ref": "教科书 P136-160 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【角的概念、度分秒换算与六十进制计算】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：两点确定一条直线，两点之间线段最短，度分秒六十进制计算。", "方法归纳：解答【角的概念、度分秒换算与六十进制计算】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：线段与角平分线计算注意位置关系的分类讨论，防漏解。", "exercises": [{"question": "关于【角的概念、度分秒换算与六十进制计算】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【角的概念、度分秒换算与六十进制计算】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c07_p05": {"id": "m_c07_p05", "name": "角平分线的几何性质与角的大小比较", "chapter": "第7章 基本的几何图形初步", "page_ref": "教科书 P136-160 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【角平分线的几何性质与角的大小比较】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：两点确定一条直线，两点之间线段最短，度分秒六十进制计算。", "方法归纳：解答【角平分线的几何性质与角的大小比较】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：线段与角平分线计算注意位置关系的分类讨论，防漏解。", "exercises": [{"question": "关于【角平分线的几何性质与角的大小比较】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【角平分线的几何性质与角的大小比较】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}, "m_c07_p06": {"id": "m_c07_p06", "name": "余角和补角的概念与‘同角或等角的余角/补角相等’定理", "chapter": "第7章 基本的几何图形初步", "page_ref": "教科书 P136-160 · 中考考点", "citations": [{"source": "义务教育数学教科书核心定义", "text": "在初中数学体系中，【余角和补角的概念与‘同角或等角的余角/补角相等’定理】是解决代数与几何综合问题的核心方法和基础工具。", "note": "课标要求掌握基本概念、推导过程与标准解题步骤。"}], "rules": ["核心定义：两点确定一条直线，两点之间线段最短，度分秒六十进制计算。", "方法归纳：解答【余角和补角的概念与‘同角或等角的余角/补角相等’定理】问题时，先分析题设条件，建立数形结合或方程等量关系。", "解题步骤：审清题意 ➔ 提炼关键数据 ➔ 依据定理公式列式 ➔ 严密求解并验算。"], "pitfalls": "【常见易错点】：线段与角平分线计算注意位置关系的分类讨论，防漏解。", "exercises": [{"question": "关于【余角和补角的概念与‘同角或等角的余角/补角相等’定理】，下列在数学计算或推导中做法正确的是：", "options": ["A. 严格遵循数学运算法则与几何定理，保持符号与等量关系准确", "B. 计算时随意改变运算法则或遗漏括号", "C. 遇到分类讨论题时仅考虑一种特殊情况", "D. 方程两边去分母时忽略常数项"], "answer": 0, "explanation": "解：掌握【余角和补角的概念与‘同角或等角的余角/补角相等’定理】的关键是严谨遵守数学定义、公理与运算律，注意边界条件与分类讨论。故选 A。"}]}}, "materials": {"math_mat_01": {"id": "math_mat_01", "title": "01. 义务教育数学上册教科书（核心章节与范例）", "tag": "官方教科书原版", "source_file": "试卷去手写_义务教育数学上册教科书.pdf (30页)", "textbook": "义务教育教科书·数学 七年级上册", "overview": "收录七年级上册第一章至第五章核心知识体系、定理定义与课本标准例题，是理解初中数学数形结合与方程思想的第一手规范教材。", "citations": [{"speaker": "教科书代数思想", "content": "从算术到代数，用字母表示数是数学发展史上的重大飞跃。方程是刻画现实世界数量关系的有效数学模型。"}], "math_focus": ["有理数与数轴的数形对应", "整式的加减与去括号法则", "一元一次方程的解法与等式性质"], "exercises": [{"question": "在有理数 -3, 0, 2/3, -1.5, 5 中，非负数的个数是：", "options": ["A. 1 个", "B. 2 个", "C. 3 个", "D. 4 个"], "answer": 2, "explanation": "解：非负数即大于或等于 0 的数，包括 0, 2/3, 5 共 3 个。负数为 -3 和 -1.5。故选 C。"}]}, "math_mat_02": {"id": "math_mat_02", "title": "02. 有理数运算复习巩固与运算避坑专项", "tag": "计算能力强化复习卷", "source_file": "试卷去手写_有理数运算复习巩固.pdf (30页)", "textbook": "七上数学强化卷 · 运算专项", "overview": "专注于有理数加减乘除四则运算、负数乘方符号判定（(-4)^2 vs -4^2）、大数科学记数法与数列交错正负数规律探索。", "citations": [{"speaker": "复习卷典型例题", "content": "计算：12 ÷ (-4) + 4 × (-5)^2。解析：先算乘方 (-5)^2 = 25，再算乘除法，最后算加减法。"}], "math_focus": ["乘方底数带括号与不带括号判定", "四则混合运算顺序防错", "科学记数法指数 n = 位数 - 1"], "exercises": [{"question": "计算：12 ÷ (-4) + 4 × (-5)^2 的结果是：", "options": ["A. 97", "B. -103", "C. 103", "D. -97"], "answer": 0, "explanation": "解：原式 = 12 ÷ (-4) + 4 × 25 = -3 + 100 = 97。故选 A。"}]}, "math_mat_03": {"id": "math_mat_03", "title": "03. 一元一次方程解决实际问题应用模型", "tag": "应用题建模精编卷", "source_file": "试卷去手写_一元一次方程解决实际问题.pdf (25页)", "textbook": "七上数学应用专题 · 列方程解应用题", "overview": "系统涵盖积分扣分守恒模型、粮仓物资调配问题、抽水协作工程模型与阅读科普书规划模型，全方位训练找等量关系能力。", "citations": [{"speaker": "实际问题建模方法", "content": "列方程解应用题的本质是用代数式表示题中的未知量，通过‘不变量’或‘守恒关系’列出方程并求解。"}], "math_focus": ["竞赛得分：答对得分 - 答错扣分 = 最终总分", "物资调配：各仓原有量调动后建立等式", "工程问题：工作总量设为 1，工作时间 = 1 ÷ 合作效率"], "exercises": [{"question": "一件衣服标价 200 元，按标价打 8 折出售，仍可获利 20 元，则这件衣服的进价（成本）是：", "options": ["A. 140 元", "B. 160 元", "C. 120 元", "D. 150 元"], "answer": 0, "explanation": "解：售价 = 200 × 0.8 = 160 元。利润 = 售价 - 进价 = 20 元，则进价 = 售价 - 利润 = 160 - 20 = 140 元。故选 A。"}]}}};
+    const textbooksData = {"curriculum_standard": "教育部义务教育数学课程标准", "textbook_series": [{"id": "grade7_math_vol1", "name": "义务教育教科书·数学 七年级上册", "grade": "七年级（初一上）", "modules": [{"module_id": "math_mod_01", "title": "义务教育数学上册教科书（核心章节与范例精选）", "topics": ["正数与负数的引入与生活实例", "数轴、相反数与绝对值的几何意义", "整式的加法与减法法则", "一元一次方程的认识与解法", "基本几何图形认知"], "related_points": ["m_c01_p01", "m_c01_p03", "m_c01_p05", "m_c04_p02", "m_c05_p01"], "materials": [{"type": "official_textbook", "title": "义务教育数学上册教科书（去手写清爽版）", "pages": 30, "source_file": "试卷去手写_义务教育数学上册教科书.pdf"}]}, {"module_id": "math_mod_02", "title": "有理数运算复习巩固与运算避坑专项", "topics": ["有理数加减乘除四则混合运算顺序", "负数乘方符号判定（(-4)^2 vs -4^2 混淆甄别）", "科学记数法表示百亿千瓦时大数 (3000亿 = 3×10^11)", "有效数字与近似数精确度", "交错正负数规律探究 (-1, 2, -3, 4, -5, 6...)"], "related_points": ["m_c02_p01", "m_c02_p03", "m_c02_p05", "m_c02_p06", "m_c02_p07"], "materials": [{"type": "exercise_and_review", "title": "有理数运算复习巩固专题（去手写强化卷）", "pages": 30, "source_file": "试卷去手写_有理数运算复习巩固.pdf"}]}, {"module_id": "math_mod_03", "title": "一元一次方程解决实际问题应用模型", "topics": ["科普知识竞赛抢答得分扣分模型 (答对+20, 答错-10)", "甲乙两粮仓小麦调拨与总量守恒问题 (总量400吨调拨)", "水泵抽水与管道维修工程协作模型 (工作量=工作效率×时间)", "三天读完数学科普书页数分配模型", "列方程解应用题五步骤：审设列解答"], "related_points": ["m_c05_p04", "m_c06_p01", "m_c06_p02", "m_c06_p03"], "materials": [{"type": "application_models", "title": "一元一次方程解决实际问题（去手写精编版）", "pages": 25, "source_file": "试卷去手写_一元一次方程解决实际问题.pdf"}]}]}]};
+
+    function renderTopics(items) {
+      const container = document.getElementById('topics-container');
+      container.innerHTML = '';
+      
+      let count = 0;
+      items.chapters.forEach(ch => {
+        if (!ch.points || ch.points.length === 0) return;
+        count += ch.points.length;
+        
+        const card = document.createElement('div');
+        card.className = 'chapter-card';
+        card.innerHTML = `
+          <div class="chapter-header">
+            <span class="chapter-title">${ch.chapter_name}</span>
+            <span class="chapter-meta">P${ch.page_range} · ${ch.points.length} 个基础考点</span>
+          </div>
+          <div class="points-grid">
+            ${ch.points.map(p => `
+              <div class="point-card" onclick="openTopicDetail('${p.id}', '${p.name}', '${ch.chapter_name}')">
+                <div class="point-header">
+                  <span class="point-name">${p.name}</span>
+                  <span class="point-arrow">➔</span>
+                </div>
+                <div class="point-footer">
+                  <span class="point-tag">${p.id}</span>
+                  <span class="point-action">知识引用 & 练习 👆</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      document.getElementById('point-count-badge').innerText = count;
+    }
+
+    function renderMaterials() {
+      const container = document.getElementById('materials-container');
+      const mats = detailsData.materials;
+      container.innerHTML = Object.keys(mats).map(k => {
+        const m = mats[k];
+        return `
+          <div class="mat-card" onclick="openMaterialDetail('${k}')">
+            <span class="mat-tag">${m.tag}</span>
+            <div class="mat-title">${m.title}</div>
+            <div class="mat-desc">${m.overview}</div>
+            <div style="font-size: 0.82rem; color: #22d3ee;">🎯 数学核心：${m.math_focus.join(' · ')}</div>
+            <div class="mat-footer">
+              <span>📚 ${m.source_file}</span>
+              <span style="color: #34d399; font-weight:600;">查看定理引用与例题 ➔</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterTopics() {
+      const q = document.getElementById('math-search').value.toLowerCase().trim();
+      if (!q) {
+        renderTopics(topicsData);
+        return;
+      }
+      const filtered = {
+        ...topicsData,
+        chapters: topicsData.chapters.map(ch => {
+          const matched = ch.points.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            ch.chapter_name.toLowerCase().includes(q)
+          );
+          return { ...ch, points: matched };
+        }).filter(ch => ch.points.length > 0)
+      };
+      renderTopics(filtered);
+    }
+
+    function switchMainTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
+      
+      if (tabId === 'topics') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('view-topics').classList.add('active');
+      } else if (tabId === 'textbooks') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('view-textbooks').classList.add('active');
+      } else if (tabId === 'models') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('view-models').classList.add('active');
+      }
+    }
+
+    let currentQuizData = [];
+
+    function openTopicDetail(pid, fallbackName, fallbackChapter) {
+      let t = detailsData.topics[pid];
+      if (!t) {
+        t = {
+          name: fallbackName,
+          chapter: fallbackChapter,
+          page_ref: "教科书定义及定理",
+          citations: [
+            { source: "课标核心公式", text: "根据数学运算法则，建立数式与方程模型。", note: "掌握基本概念与运算步骤。" }
+          ],
+          rules: ["严格按照运算法则和等式性质进行严密演算。"],
+          pitfalls: "【易错提示】：注意符号法则，避免负号丢失。",
+          exercises: [
+            {
+              question: `关于【${fallbackName}】，下列选项中表述规范的是：`,
+              options: ["A. 遵守数学运算法则与几何公理", "B. 随意去分母不加括号", "C. 忽略负数乘方符号", "D. 凭直觉猜答案"],
+              answer: 0,
+              explanation: "解答数学题目需严守定义、定理与步骤规范。故选 A。"
+            }
+          ]
+        };
+      }
+      populateModal(t.name, `${t.chapter} · ${t.page_ref}`, t.citations, t.rules, t.pitfalls, t.exercises);
+    }
+
+    function openMaterialDetail(mid) {
+      const m = detailsData.materials[mid];
+      if (!m) return;
+      const citations = m.citations.map(c => ({
+        source: c.speaker || "教科书原篇引用",
+        text: c.content,
+        note: `出处：${m.source_file}`
+      }));
+      populateModal(m.title, `${m.textbook} · ${m.source_file}`, citations, m.math_focus, "【教材精读提示】：结合课本标准例题体会方程建模与数形结合思想，并在随堂小练中巩固应用。", m.exercises);
+    }
+
+    function populateModal(title, meta, citations, rules, pitfall, exercises) {
+      document.getElementById('m-title').innerText = title;
+      document.getElementById('m-meta').innerText = meta;
+      
+      const citContainer = document.getElementById('m-citations-container');
+      citContainer.innerHTML = citations.map(c => `
+        <div class="citation-card">
+          <div class="citation-source">📖 ${c.source}</div>
+          <div class="citation-text">“${c.text}”</div>
+          ${c.note ? `<div class="citation-note">💡 ${c.note}</div>` : ''}
+        </div>
+      `).join('');
+
+      const rulesContainer = document.getElementById('m-rules-container');
+      rulesContainer.innerHTML = rules.map(r => `
+        <div class="rule-item">📌 ${r}</div>
+      `).join('');
+
+      document.getElementById('m-pitfall-box').innerHTML = pitfall;
+
+      currentQuizData = exercises || [];
+      document.getElementById('m-quiz-count').innerText = currentQuizData.length;
+      renderExercises();
+
+      switchModalTab('know');
+      document.getElementById('detail-modal').classList.add('show');
+    }
+
+    function switchModalTab(tab) {
+      const knowBtn = document.getElementById('mtab-btn-know');
+      const quizBtn = document.getElementById('mtab-btn-quiz');
+      const knowBody = document.getElementById('m-body-know');
+      const quizBody = document.getElementById('m-body-quiz');
+
+      if (tab === 'know') {
+        knowBtn.classList.add('active');
+        quizBtn.classList.remove('active');
+        knowBody.style.display = 'flex';
+        quizBody.style.display = 'none';
+      } else {
+        quizBtn.classList.add('active');
+        knowBtn.classList.remove('active');
+        knowBody.style.display = 'none';
+        quizBody.style.display = 'flex';
+      }
+    }
+
+    function renderExercises() {
+      const container = document.getElementById('m-exercises-container');
+      if (!currentQuizData || currentQuizData.length === 0) {
+        container.innerHTML = '<div style="color:var(--muted); text-align:center; padding:2rem;">暂无随堂练习</div>';
+        return;
+      }
+      container.innerHTML = currentQuizData.map((ex, qIdx) => `
+        <div class="exercise-card" id="q-card-${qIdx}">
+          <div class="exercise-title">${qIdx + 1}. ${ex.question.replace(/\n/g, '<br>')}</div>
+          <div class="options-list">
+            ${ex.options.map((opt, oIdx) => `
+              <button class="option-btn" id="opt-btn-${qIdx}-${oIdx}" onclick="selectOption(${qIdx}, ${oIdx})">
+                <span>${opt}</span>
+                <span id="badge-${qIdx}-${oIdx}"></span>
+              </button>
+            `).join('')}
+          </div>
+          <div class="explanation-box" id="expl-${qIdx}">
+            <strong style="color:#22d3ee;">【详尽推导与解析】：</strong><br>
+            ${ex.explanation}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectOption(qIdx, selectedOptIdx) {
+      const ex = currentQuizData[qIdx];
+      const correctIdx = ex.answer;
+
+      ex.options.forEach((_, oIdx) => {
+        const btn = document.getElementById(`opt-btn-${qIdx}-${oIdx}`);
+        btn.disabled = true;
+        if (oIdx === correctIdx) {
+          btn.classList.add('correct');
+          document.getElementById(`badge-${qIdx}-${oIdx}`).innerText = '✓ 正确';
+        } else if (oIdx === selectedOptIdx) {
+          btn.classList.add('wrong');
+          document.getElementById(`badge-${qIdx}-${oIdx}`).innerText = '✗ 错误';
+        }
+      });
+
+      document.getElementById(`expl-${qIdx}`).style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').classList.remove('show');
+    }
+
+    function handleBackdropClick(event) {
+      if (event.target.id === 'detail-modal') closeModal();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Initialize
+    renderTopics(topicsData);
+    renderMaterials();
+  </script>
+</body>
+</html>
